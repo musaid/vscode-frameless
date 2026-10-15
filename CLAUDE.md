@@ -1,6 +1,6 @@
 # frameless — context for Claude Code
 
-macOS-only VS Code extension. One job: hide the title bar, place the traffic lights at the left of the editor tab row, keep the window draggable from the empty tab strip. Opinionated; two settings: `frameless.trafficLights` and `frameless.watermark` (custom empty-editor logo). Renamed from Headroom on 2026-10-15.
+macOS-only VS Code extension. One job: hide the title bar, place the traffic lights at the left of the editor tab row, keep the window draggable from the empty tab strip. Opinionated; three settings: `frameless.trafficLights`, `frameless.stylesheet` (optional user CSS, empty by default) and `frameless.watermark` (custom empty-editor logo). Renamed from Headroom on 2026-10-15.
 
 ## Why it exists
 
@@ -12,7 +12,7 @@ macOS-only VS Code extension. One job: hide the title bar, place the traffic lig
 
 1. `src/patch.ts` patches three files under `env.appRoot`, backups beside them (`*.frameless-bak`):
    - `out/vs/code/electron-main/main.js` (`out/mainImpl.js` on 1.141): appends `titleBarStyle:"hidden",trafficLightPosition:{x,y}` after the anchor `experimentalDarkMode:!0` inside the BrowserWindow options literal. `hidden`, not `hiddenInset`: hiddenInset adds an NSToolbar, which gets macOS 26's larger toolbar-window corner radius.
-   - `out/vs/code/electron-browser/workbench/workbench.html`: adds `<link frameless.css>` + `<script frameless.js>` after the workbench entry script. Files are copied next to it (`vscode-file://` scheme; CSP allows it). A `frameless.watermark` image is copied there too as `frameless-watermark.<ext>` and overrides `.letterpress` after the theme.
+   - `out/vs/code/electron-browser/workbench/workbench.html`: adds `<link frameless.css>` + `<script frameless.js>` after the workbench entry script. Files are copied next to it (`vscode-file://` scheme; CSP allows it). A `frameless.watermark` image is copied there too as `frameless-watermark.<ext>` and overrides `.letterpress` after the stylesheet.
    - `product.json`: SHA-256 checksums recomputed (base64, trailing `=` stripped) so VS Code doesn't flag the install as corrupt. Must run last.
 2. `src/extension.ts` also sets `window.titleBarStyle: native` and `window.customTitleBarVisibility: never` — otherwise VS Code's own `options.titleBarStyle = 'hidden'` overrides the injected option.
 3. `src/renderer/layout.ts` runs in the workbench: finds the editor group whose bounding rect is top-left, prepends a spacer (`--frameless-traffic-x + 68px`) into its `.tabs-and-actions-container`, sets `-webkit-app-region: drag` on the empty strip and `no-drag` on tabs. Handles the empty-editor case and fullscreen.
@@ -35,5 +35,5 @@ macOS-only VS Code extension. One job: hide the title bar, place the traffic lig
 ## Conventions
 
 - TypeScript, explicit types, functional style, early returns. Keep each file readable top-to-bottom; no abstractions for one call site.
-- `assets/theme.css` is the user's former `custom-ui-style.stylesheet`, moved verbatim. Don't restyle it unasked.
+- `examples/one-dark.css` is the user's former `custom-ui-style.stylesheet`, moved verbatim; not shipped in the .vsix. Don't restyle it unasked.
 - The `src/renderer/` tree has its own tsconfig (`lib: dom`, no node); keep the two worlds separate.

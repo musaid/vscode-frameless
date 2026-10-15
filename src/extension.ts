@@ -11,8 +11,9 @@ const readTrafficLights = (): TrafficLights => {
   return { x: v?.x ?? 10, y: v?.y ?? 14 };
 };
 
-const readWatermark = (): string | undefined => {
-  const v = vscode.workspace.getConfiguration('frameless').get<string>('watermark')?.trim();
+/** A file-path setting; empty means unset, `~/` is expanded. */
+const readPath = (key: string): string | undefined => {
+  const v = vscode.workspace.getConfiguration('frameless').get<string>(key)?.trim();
   if (!v) return undefined;
   return v.startsWith('~/') ? path.join(os.homedir(), v.slice(2)) : v;
 };
@@ -59,8 +60,8 @@ export const activate = (ctx: vscode.ExtensionContext): void => {
       apply({
         trafficLights: readTrafficLights(),
         rendererScript: path.join(ctx.extensionPath, 'dist', 'frameless.js'),
-        themeCss: path.join(ctx.extensionPath, 'assets', 'theme.css'),
-        watermark: readWatermark(),
+        stylesheet: readPath('stylesheet'),
+        watermark: readPath('watermark'),
       });
     });
     if (!ok) return;

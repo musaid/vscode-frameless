@@ -2,7 +2,7 @@
   "name": "frameless",
   "displayName": "Frameless",
   "description": "macOS: hide the title bar, pin the traffic lights to the left of the editor tabs, keep the window draggable.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publisher": "musaid",
   "license": "MIT",
   "repository": {
@@ -60,10 +60,16 @@
           "description": "Where macOS places the traffic lights. Changing this needs a full relaunch; Frameless: Apply does that.",
           "scope": "application"
         },
+        "frameless.stylesheet": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "markdownDescription": "CSS file applied to the workbench (absolute path; `~/` is expanded). Empty applies no styling beyond the title-bar layout. Copied in at Apply, so run **Frameless: Apply** after editing it. See `examples/one-dark.css` in the repo."
+        },
         "frameless.watermark": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Image shown in the empty editor (SVG, PNG, JPG or WebP). Absolute path; `~/` is expanded. Empty keeps the theme's logo. Run **Frameless: Apply** after changing it.",
+          "markdownDescription": "Image shown in the empty editor (SVG, PNG, JPG or WebP). Absolute path; `~/` is expanded. Empty keeps VS Code's logo, or the one your stylesheet sets. Run **Frameless: Apply** after changing it.",
           "scope": "application"
         }
       }

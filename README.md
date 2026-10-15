@@ -11,7 +11,7 @@ There is no API for this, so Frameless patches three files inside `Code.app` (ba
 | File | Change |
 | --- | --- |
 | `out/vs/code/electron-main/main.js` | Injects `titleBarStyle: "hidden"` and `trafficLightPosition` into the `BrowserWindow` options literal |
-| `out/vs/code/electron-browser/workbench/workbench.html` | Adds `frameless.js` (tab-bar spacer + drag regions) and `frameless.css` (`assets/theme.css`) |
+| `out/vs/code/electron-browser/workbench/workbench.html` | Adds `frameless.js` (tab-bar spacer + drag regions) and `frameless.css` (your `frameless.stylesheet`, if set) |
 | `product.json` | Recomputes checksums so VS Code doesn't report the install as corrupt |
 
 It also sets `window.titleBarStyle: native` and `window.customTitleBarVisibility: never` in user settings — VS Code overrides Electron's `titleBarStyle` whenever it draws its own title bar, so these are part of the layout.
@@ -32,12 +32,11 @@ Using profiles? Install it into each profile you open windows with (`--profile <
 2. After every VS Code update it offers Apply again (the update replaces the patched files).
 3. `Frameless: Restore VS Code files` undoes everything. Uninstalling the extension restores on the next launch.
 
-Settings (run Apply after changing either). Both are application-wide, like the patch itself: workspace settings can't set them, and in other profiles VS Code reads them from the Default profile.
+Settings (run Apply after changing any). Both are application-wide, like the patch itself: workspace settings can't set them, and in other profiles VS Code reads them from the Default profile.
 
 - `frameless.trafficLights`: `{ x, y }`, default `{ 10, 14 }`.
-- `frameless.watermark`: path to an SVG/PNG/JPG/WebP shown in the empty editor; empty keeps the theme's logo.
-
-`assets/theme.css` is the bundled theme (One Dark-style colours, Operator Mono Lig); edit it, rebuild, reinstall.
+- `frameless.stylesheet`: path to a CSS file applied to the workbench; empty by default. [`examples/one-dark.css`](examples/one-dark.css) is a full theme to start from (One Dark colours, Operator Mono Lig). It's copied in at Apply, so re-run Apply after editing it.
+- `frameless.watermark`: path to an SVG/PNG/JPG/WebP shown in the empty editor; empty keeps VS Code's logo, or the one your stylesheet sets.
 
 ## Build
 
