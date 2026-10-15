@@ -1,0 +1,86 @@
+{
+  "name": "frameless",
+  "displayName": "Frameless",
+  "description": "macOS: hide the title bar, pin the traffic lights to the left of the editor tabs, keep the window draggable.",
+  "version": "0.1.2",
+  "publisher": "musaid",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/musaid/vscode-frameless"
+  },
+  "private": true,
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "titlebar",
+    "traffic lights",
+    "frameless",
+    "macos"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "frameless.apply",
+        "title": "Frameless: Apply"
+      },
+      {
+        "command": "frameless.restore",
+        "title": "Frameless: Restore VS Code files"
+      }
+    ],
+    "configuration": {
+      "title": "Frameless",
+      "properties": {
+        "frameless.trafficLights": {
+          "type": "object",
+          "default": {
+            "x": 10,
+            "y": 14
+          },
+          "properties": {
+            "x": {
+              "type": "number",
+              "description": "Left offset of the traffic lights, in points."
+            },
+            "y": {
+              "type": "number",
+              "description": "Top offset of the traffic lights, in points. 14 centers the 14pt macOS 26 lights on the 35px tab row (measured)."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Where macOS places the traffic lights. Changing this needs a full relaunch; Frameless: Apply does that.",
+          "scope": "application"
+        },
+        "frameless.watermark": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Image shown in the empty editor (SVG, PNG, JPG or WebP). Absolute path; `~/` is expanded. Empty keeps the theme's logo. Run **Frameless: Apply** after changing it.",
+          "scope": "application"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p src/renderer/tsconfig.json --noEmit",
+    "package": "pnpm build && vsce package --no-dependencies",
+    "vscode:uninstall": "node ./dist/uninstall.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.6.0"
+  }
+}

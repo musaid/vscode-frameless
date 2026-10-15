@@ -1,0 +1,10 @@
+src/**
+node_modules/**
+build.mjs
+tsconfig.json
+pnpm-lock.yaml
+.vscode/**
+.gitignore
+HANDOFF.md
+CLAUDE.md
+*.tgz
