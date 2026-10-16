@@ -6,11 +6,13 @@ I built it for a layout with the activity bar hidden and the sidebar on the righ
 
 ## Install
 
-Install it from the Marketplace, or download the `.vsix` from [Releases](https://github.com/musaid/vscode-frameless/releases) and run:
+Install it from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=musaid.frameless), or run:
 
 ```sh
-code --install-extension frameless-<version>.vsix
+code --install-extension musaid.frameless
 ```
+
+The `.vsix` is also on [Releases](https://github.com/musaid/vscode-frameless/releases).
 
 Click **Apply** when it asks, then **Relaunch**.
 
