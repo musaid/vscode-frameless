@@ -1,9 +1,14 @@
 {
   "name": "frameless",
   "displayName": "Frameless",
-  "description": "macOS: hide the title bar, pin the traffic lights to the left of the editor tabs, keep the window draggable.",
-  "version": "0.2.0",
+  "description": "Hide the title bar on macOS and put the traffic lights next to your tabs.",
+  "version": "0.2.1",
   "publisher": "musaid",
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#282c34",
+    "theme": "dark"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -49,27 +54,27 @@
           "properties": {
             "x": {
               "type": "number",
-              "description": "Left offset of the traffic lights, in points."
+              "description": "Distance from the left edge."
             },
             "y": {
               "type": "number",
-              "description": "Top offset of the traffic lights, in points. 14 centers the 14pt macOS 26 lights on the 35px tab row (measured)."
+              "description": "Distance from the top edge. 14 centres them on the tab bar."
             }
           },
           "additionalProperties": false,
-          "description": "Where macOS places the traffic lights. Changing this needs a full relaunch; Frameless: Apply does that.",
+          "description": "Where the traffic lights sit, in points from the top-left corner.",
           "scope": "application"
         },
         "frameless.stylesheet": {
           "type": "string",
           "default": "",
           "scope": "application",
-          "markdownDescription": "CSS file applied to the workbench (absolute path; `~/` is expanded). Empty applies no styling beyond the title-bar layout. Copied in at Apply, so run **Frameless: Apply** after editing it. See `examples/one-dark.css` in the repo."
+          "markdownDescription": "Your own CSS file, applied to the whole window. `~/` works. Run **Frameless: Apply** after you edit it."
         },
         "frameless.watermark": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Image shown in the empty editor (SVG, PNG, JPG or WebP). Absolute path; `~/` is expanded. Empty keeps VS Code's logo, or the one your stylesheet sets. Run **Frameless: Apply** after changing it.",
+          "markdownDescription": "An image for the empty editor: SVG, PNG, JPG or WebP. `~/` works. Leave empty for the default.",
           "scope": "application"
         }
       }

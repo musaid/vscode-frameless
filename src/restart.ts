@@ -13,7 +13,7 @@ export const relaunch = (): void => {
   // `Code Helper (Plugin).app`, which has no bin/ of its own.
   const binDir = path.join(appRoot, 'bin');
   const cli = fs.readdirSync(binDir).find((f) => !f.includes('-tunnel'));
-  if (!cli) throw new Error(`No CLI launcher found in ${binDir}`);
+  if (!cli) throw new Error(`Can't find the code command in ${binDir}.`);
 
   const script = [
     `quit app "${nameLong}"`,

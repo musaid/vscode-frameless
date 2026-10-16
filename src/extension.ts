@@ -33,24 +33,24 @@ const ensureWindowSettings = async (): Promise<void> => {
   }
 };
 
-const run = async (label: string, fn: () => unknown): Promise<boolean> => {
+const run = async (verb: string, fn: () => unknown): Promise<boolean> => {
   try {
     await fn();
     return true;
   } catch (e) {
-    vscode.window.showErrorMessage(`Frameless: ${label} failed — ${(e as Error).message}`);
+    vscode.window.showErrorMessage(`Frameless couldn't ${verb}. ${(e as Error).message}`);
     return false;
   }
 };
 
-const offerRelaunch = async (what: string): Promise<void> => {
-  const pick = await vscode.window.showInformationMessage(`Frameless: ${what}. Relaunch to take effect.`, 'Relaunch');
-  if (pick === 'Relaunch') await run('relaunch', relaunch);
+const offerRelaunch = async (message: string): Promise<void> => {
+  const pick = await vscode.window.showInformationMessage(message, 'Relaunch');
+  if (pick === 'Relaunch') await run('relaunch VS Code', relaunch);
 };
 
 export const activate = (ctx: vscode.ExtensionContext): void => {
   if (process.platform !== 'darwin') {
-    vscode.window.showWarningMessage('Frameless only does anything on macOS.');
+    vscode.window.showWarningMessage('Frameless only works on macOS.');
     return;
   }
 
@@ -66,27 +66,27 @@ export const activate = (ctx: vscode.ExtensionContext): void => {
     });
     if (!ok) return;
     await ctx.globalState.update(APPLIED_VERSION, vscode.version);
-    await offerRelaunch('applied');
+    await offerRelaunch('Frameless is applied. Relaunch VS Code to see it.');
   };
 
   const doRestore = async (): Promise<void> => {
     if (!(await run('restore', restore))) return;
     await ctx.globalState.update(APPLIED_VERSION, undefined);
-    await offerRelaunch('VS Code files restored');
+    await offerRelaunch('VS Code is back to its original files. Relaunch to finish.');
   };
 
   // Every window runs its own copy of this extension. Only the focused one asks, so there is
   // one prompt per change and two windows never apply at the same time.
-  const offerApply = async (reason: string): Promise<void> => {
+  const offerApply = async (message: string): Promise<void> => {
     if (!vscode.window.state.focused) return;
-    const pick = await vscode.window.showInformationMessage(`Frameless: ${reason}. Apply now?`, 'Apply');
+    const pick = await vscode.window.showInformationMessage(message, 'Apply');
     if (pick === 'Apply') await doApply();
   };
 
   /** Offers Apply once this window has focus, unless another window has applied by then. */
-  const offerApplyWhenFocused = (reason: string): void => {
+  const offerApplyWhenFocused = (message: string): void => {
     const offer = (): void => {
-      if (!isPatched()) void offerApply(reason);
+      if (!isPatched()) void offerApply(message);
     };
     if (vscode.window.state.focused) return offer();
     const sub = vscode.window.onDidChangeWindowState((s) => {
@@ -101,7 +101,7 @@ export const activate = (ctx: vscode.ExtensionContext): void => {
     vscode.commands.registerCommand('frameless.apply', doApply),
     vscode.commands.registerCommand('frameless.restore', doRestore),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('frameless')) void offerApply('settings changed');
+      if (e.affectsConfiguration('frameless')) void offerApply('Frameless settings changed. Apply them now?');
     }),
   );
 
@@ -109,13 +109,13 @@ export const activate = (ctx: vscode.ExtensionContext): void => {
     // A VS Code update replaces the patched files; backups from the old build are now stale.
     const applied = ctx.globalState.get<string>(APPLIED_VERSION);
     if (applied !== undefined && applied !== vscode.version) {
-      if (await run('cleanup', dropBackups)) offerApplyWhenFocused(`VS Code updated to ${vscode.version}`);
+      if (await run('clean up', dropBackups)) offerApplyWhenFocused(`VS Code updated to ${vscode.version}. Apply Frameless again?`);
       return;
     }
     if (isPatched()) return;
     // A failed apply can leave some files patched; put the originals back before offering a clean one.
-    if (hasBackups() && !(await run('cleanup', restore))) return;
-    offerApplyWhenFocused('not applied yet');
+    if (hasBackups() && !(await run('clean up', restore))) return;
+    offerApplyWhenFocused("Frameless isn't applied yet. Apply it now?");
   };
   void startup();
 };

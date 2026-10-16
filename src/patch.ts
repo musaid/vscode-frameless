@@ -59,10 +59,10 @@ const MAIN_ANCHOR = /experimentalDarkMode:!0/;
 const patchMain = (source: string, lights: TrafficLights): string => {
   // The values are spliced into main-process code; anything but a plain number is rejected.
   if (!Number.isFinite(lights.x) || !Number.isFinite(lights.y)) {
-    throw new Error(`frameless.trafficLights must be numbers, got ${JSON.stringify(lights)}.`);
+    throw new Error('frameless.trafficLights needs numbers for x and y.');
   }
   if (!MAIN_ANCHOR.test(source)) {
-    throw new Error(`Could not find BrowserWindow options anchor in ${mainJs.src}; VS Code layout changed.`);
+    throw new Error(`This VS Code version isn't supported yet: ${mainJs.src} has changed.`);
   }
   // `hidden`, not `hiddenInset`: hiddenInset adds an NSToolbar, and macOS 26 draws toolbar windows
   // with a larger corner radius. trafficLightPosition places the lights either way.
@@ -76,7 +76,7 @@ const HTML_ANCHOR = '<script src="./workbench.js" type="module"></script>';
 
 const patchHtml = (source: string): string => {
   if (!source.includes(HTML_ANCHOR)) {
-    throw new Error(`Could not find workbench entry script in ${workbenchHtml.src}; VS Code layout changed.`);
+    throw new Error(`This VS Code version isn't supported yet: ${workbenchHtml.src} has changed.`);
   }
   const tags = [
     `<!-- ${MARKER} -->`,
@@ -92,10 +92,10 @@ const WATERMARK_TYPES: readonly string[] = ['.svg', '.png', '.jpg', '.jpeg', '.w
 const assertFile = (setting: string, file: string | undefined, types: readonly string[]): void => {
   if (file === undefined) return;
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) {
-    throw new Error(`${setting}: file not found: ${file}`);
+    throw new Error(`Can't find ${file} (${setting}).`);
   }
   if (!types.includes(path.extname(file).toLowerCase())) {
-    throw new Error(`${setting} must be one of ${types.join(', ')}: ${file}`);
+    throw new Error(`${setting} has to be a ${types.join(', ').replace(/, ([^,]+)$/, ' or $1')} file.`);
   }
 };
 
@@ -160,6 +160,8 @@ const writeManifest = (): void => {
 // options literal (and win), and its patched files would be backed up as our "pristine" copies.
 const FOREIGN_BACKUP = 'custom-ui-style';
 const FOREIGN_HTML = 'External Script Start';
+const CUSTOM_UI_STYLE_APPLIED =
+  'Custom UI Style is still applied. Run its "Rollback, cleanup and restart instantly", then uninstall it.';
 
 const assertNoForeignPatch = (): void => {
   const dirs = new Set(allTargets.map((t) => path.dirname(t.src)));
@@ -167,10 +169,10 @@ const assertNoForeignPatch = (): void => {
     fs.readdirSync(d).filter((f) => f.includes(FOREIGN_BACKUP)).map((f) => path.join(d, f)),
   );
   if (leftovers.length > 0) {
-    throw new Error(`custom-ui-style is still applied (${leftovers[0]}). Run its "Rollback, cleanup and restart instantly" first.`);
+    throw new Error(CUSTOM_UI_STYLE_APPLIED);
   }
   if (fs.readFileSync(workbenchHtml.src, 'utf8').includes(FOREIGN_HTML)) {
-    throw new Error(`${workbenchHtml.src} still has custom-ui-style's script tags. Run its rollback first.`);
+    throw new Error(CUSTOM_UI_STYLE_APPLIED);
   }
 };
 
